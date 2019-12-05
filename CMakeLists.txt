@@ -21,16 +21,13 @@ if (NOT CMAKE_BUILD_TYPE)
     set (CMAKE_BUILD_TYPE "release")
 endif (NOT CMAKE_BUILD_TYPE)
 
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/buildflags.in
+        ${CMAKE_BINARY_DIR}/buildflags_rjobject)
+
 # Initialize the dependencies to an empty list.
 set (RJOBJ_DEPS)
 
-# ==========================================================================
-#                                                                     DNest3
-# ==========================================================================
-
-find_package (DNest3 REQUIRED)
-list (APPEND RJOBJ_DEPS ${DNEST3_LIBRARY})
-include_directories (SYSTEM ${DNEST3_INCLUDES})
+include_directories(../lib_dnest3/include)
 
 # ==========================================================================
 #                                                                        GSL
@@ -44,6 +41,8 @@ include_directories (SYSTEM ${GSL_INCLUDES})
 #                                                                      BOOST
 # ==========================================================================
 
+set( Boost_USE_MULTITHREADED ON )
+set( Boost_NO_BOOST_CMAKE 1 ) #  Bug where FindBoost replaces the system MT boot with single threaded
 find_package (Boost COMPONENTS thread system REQUIRED)
 list (APPEND RJOBJ_DEPS ${Boost_LIBRARIES})
 include_directories (SYSTEM ${Boost_INCLUDES})
@@ -69,23 +68,25 @@ set (RJOBJ_INCLUDES
 )
 
 add_library (rjobject ${RJOBJ_SRC})
+add_library (lib::rjobject ALIAS rjobject)
 target_link_libraries (rjobject ${RJOBJ_DEPS})
+target_link_libraries (rjobject lib::dnest3)
 
 install (TARGETS rjobject DESTINATION lib)
 install (FILES ${RJOBJ_INCLUDES} DESTINATION include/rjobject)
 
-# ==========================================================================
-#                                                            DEMO EXECUTABLE
-# ==========================================================================
-
-set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
-add_executable (main main.cpp)
-target_link_libraries (main rjobject ${RJOBJ_DEPS})
-
-# ==========================================================================
-#                                                               THE EXAMPLES
-# ==========================================================================
-
-# The examples refer to the headers relative to the project root directory.
-include_directories (${PROJECT_SOURCE_DIR})
-add_subdirectory (Examples)
+# # ==========================================================================
+# #                                                            DEMO EXECUTABLE
+# # ==========================================================================
+#
+# set(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
+# add_executable (main main.cpp)
+# target_link_libraries (main rjobject ${RJOBJ_DEPS})
+#
+# # ==========================================================================
+# #                                                               THE EXAMPLES
+# # ==========================================================================
+#
+# # The examples refer to the headers relative to the project root directory.
+# include_directories (${PROJECT_SOURCE_DIR})
+# add_subdirectory (Examples)
