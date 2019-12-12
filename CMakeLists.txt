@@ -14,7 +14,7 @@ if (CMAKE_COMPILER_IS_GNUCC)
   set (CMAKE_RANLIB "gcc-ranlib")
 endif (CMAKE_COMPILER_IS_GNUCC)
 
-set (CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic")
+set (CMAKE_CXX_FLAGS "-Wall -Wextra -pedantic -mavx2")
 set (CMAKE_CXX_FLAGS_RELEASE "-m64 -O3 -flto -march=native -funroll-loops")
 set (CMAKE_CXX_FLAGS_DEBUG "-O0 -g")
 if (NOT CMAKE_BUILD_TYPE)
